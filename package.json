@@ -1,0 +1,46 @@
+{
+  "name": "jsonapi-deserializer",
+  "version": "0.0.1",
+  "description": "JSON API-Compliant Deserializer",
+  "main": "es5/src/index.js",
+  "types": "es5/src/index.d.ts",
+  "scripts": {
+    "prepublish": "tsc",
+    "pretest": "tsc",
+    "test": "jasmine",
+    "tsc": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ShadowManu/jsonapi-deserializer"
+  },
+  "keywords": [
+    "json",
+    "api",
+    "json-api",
+    "jsonapi",
+    "deserializer",
+    "deserialization"
+  ],
+  "author": "Manuel Pacheco <manuelalejandropm@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ShadowManu/jsonapi-deserializer/issues"
+  },
+  "homepage": "https://github.com/ShadowManu/jsonapi-deserializer",
+  "files": [
+    "es5"
+  ],
+  "dependencies": {
+    "lodash": "^4.14.2",
+    "type-check": "^0.3.2"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^2.5.40",
+    "@types/lodash": "^4.14.42",
+    "@types/node": "^7.0.0",
+    "jasmine": "^2.5.2",
+    "tslint": "^4.3.1",
+    "typescript": "^2.0.10"
+  }
+}
