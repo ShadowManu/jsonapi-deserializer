@@ -1,19 +1,40 @@
+// Meta Types
+
+export type Multiple<T> = T | T[] | undefined;
+export type Hash<T> = { [key: string]: T };
+export type Serialization = any;
+
+// Common Types
 
 export interface Document {
-  data?: Resource | Resource[];
+  data?: Multiple<Resource>;
   links?: any;
-  included?: Resource[];
+  included?: Multiple<Resource>;
 }
 
-export interface ResourceIdentifier {
-  id?: string;
+export interface ResourceId {
+  id: string;
   type: string;
   links?: any;
 }
 
-export interface Resource extends ResourceIdentifier {
-  id?: string;
-  type: string;
+export interface Resource extends ResourceId {
   attributes: any;
-  relationships: { [name: string]: ResourceIdentifier };
+  relationships?: Hash<Relations>;
 }
+
+export interface Relations {
+  data?: Multiple<ResourceId>;
+  links?: any;
+  meta?: any;
+}
+
+// Internal Processing Types
+
+export interface PResource {
+  resource: any;
+  relations: PRelations;
+}
+
+export type PRelations = Hash<Multiple<ResourceId>>;
+export type RelHash = Hash<Hash<Resource>>;

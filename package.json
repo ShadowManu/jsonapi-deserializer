@@ -39,6 +39,7 @@
     "@types/jasmine": "^2.5.40",
     "@types/lodash": "^4.14.50",
     "@types/node": "^7.0.0",
+    "@types/type-check": "^0.3.27",
     "jasmine": "^2.5.3",
     "tslint": "^4.3.1",
     "typescript": "^2.1.5"
