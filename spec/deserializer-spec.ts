@@ -100,4 +100,35 @@ describe('deserialize', () => {
     expect(matches(expected)(result)).toBe(true);
   });
 
+  it('should deserialize nested resources', () => {
+    let document: Document = {
+      data: [
+        {
+          id: '1', type: 'people', attributes: { name: 'John' },
+          relationships: { friend: { data: { id: '2', type: 'people' } } }
+        },
+        {
+          id: '2', type: 'people', attributes: { name: 'Carl' },
+          relationships: { dog: { data: { id: '3', type: 'dogs'} } }
+        }
+      ],
+      included: [
+        {
+          id: '2', type: 'people', attributes: { name: 'Carl' },
+          relationships: { dog: { data: { id: '3', type: 'dogs'} } }
+        },
+        { id: '3', type: 'dogs', attributes: { name: 'Bobby' } }
+      ]
+    };
+
+    let result: any = deserialize(document);
+
+    let expected = [
+      { id: '1', name: 'John', friend: { id: '2', name: 'Carl', dog: { id: '3', name: 'Bobby' } } },
+      { id: '2', name: 'Carl', dog: { id: '3', name: 'Bobby' } }
+    ];
+
+    expect(matches(expected)(result)).toBe(true);
+  });
+
 });
