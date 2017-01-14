@@ -1,6 +1,6 @@
 {
   "name": "jsonapi-deserializer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "JSON API-Compliant Deserializer",
   "main": "es5/src/index.js",
   "types": "es5/src/index.d.ts",
