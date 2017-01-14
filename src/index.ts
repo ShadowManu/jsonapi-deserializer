@@ -2,86 +2,59 @@ import { assign, isArray, mapValues, merge } from 'lodash';
 
 import {
   Document, Multiple, Serialization,
-  Resource, ResourceId, PResource,
-  Relations, PRelations, RelHash
+  Resource, ResourceId, RelationshipObj, RelationsHash
 } from './interfaces';
 
 export function deserialize(doc: Document): Serialization {
-  let pResources = getResources(doc);
-  let relationships = getRelationships(doc);
-  return denormalize(pResources, relationships);
+  return denormalize(doc.data, createRelationshipsHash(doc));
 }
 
-function getResources(doc: Document): Multiple<PResource> {
-  // Null Case
-  if (!doc.data) {
-    return undefined;
+function createRelationshipsHash(doc: Document): RelationsHash {
+  let result: RelationsHash = {};
 
-  // Collection Case
-  } else if (isArray(doc.data)) {
-    return doc.data.map((resource) => processResource(resource));
-
-  // Single Case
-  } else {
-    return processResource(doc.data);
+  if (doc.included) {
+    doc.included.forEach((resource: Resource) => {
+      let { id, type } = resource;
+      merge(result, { [type]: { [id]: resource } });
+    });
   }
-}
-
-function processResource(resource: Resource): PResource {
-  let { id, attributes, relationships = {} }: Resource = resource;
-
-  let relations: PRelations = mapValues(relationships, (rels: Relations): Multiple<ResourceId> => rels.data);
-
-  return { resource: assign({}, attributes, { id }), relations };
-}
-
-function getRelationships(doc: Document): RelHash {
-  let result: RelHash = {};
-
-  arrayify(doc.included).forEach(({ id, type, attributes }: Resource) => {
-    merge(result, { [type]: { [id]: assign({}, attributes, { id }) } });
-  });
 
   return result;
 }
 
-function denormalize(pResources: Multiple<PResource>, relations: RelHash): any {
-  if (!pResources) {
-    return undefined;
-
-  } else if (isArray(pResources)) {
-    return pResources.map((pResource) => denormalize(pResource, relations));
-
-  } else {
-    let pResource = pResources;
-
-    return assign(pResource.resource, mapValues(pResource.relations, (rels: Multiple<ResourceId>) => {
-      // Null Case
-      if (!rels) {
-        return undefined;
-
-        // Collection Case
-      } else if (isArray(rels)) {
-        return rels.map((rel) => findRelation(rel, relations));
-
-        // Single Case
-      } else {
-        return findRelation(rels, relations);
-      }
-    }));
-  }
+function denormalize(resources: Multiple<Resource>, relations: RelationsHash): any {
+  return fmapMultiple(resources, (resource: Resource): Serialization =>
+    processResource(resource, relations)
+  );
 }
 
-function findRelation(rel: ResourceId, relations: RelHash) {
-  return relations[rel.type][rel.id];
+function processResource(res: Resource, relHash: RelationsHash): Serialization {
+  let { id, attributes, relationships } = res;
+
+  let rels: Multiple<any> = mapValues(relationships, (rel: RelationshipObj): any =>
+    fmapMultiple(rel.data, (relId: ResourceId): any => {
+      let relRes = findRelation(relId, relHash);
+      return relRes && processResource(relRes, relHash);
+    })
+  );
+
+  return assign({}, attributes, { id }, rels);
+}
+
+function findRelation(rel: ResourceId, relations: RelationsHash): Resource | undefined {
+  return relations[rel.type] && relations[rel.type][rel.id];
 }
 
 // Helper functions
 
-function arrayify<T>(data: Multiple<T>): T[] {
-  if (!data) { return [];
-
-  } else if (isArray(data)) { return data;
-
-  } else { return [data]; }
+function fmapMultiple<T, R>(data: Multiple<T>, transform: (data: T) => R): Multiple<R> {
+  // Null Case
+  if (!data) { return undefined;
+  // Array Case
+  } else if (isArray(data)) {
+    return data.map(transform);
+  // Single Case
+  } else {
+    return transform(data);
+  }
 }

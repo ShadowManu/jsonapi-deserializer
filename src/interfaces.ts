@@ -9,7 +9,7 @@ export type Serialization = any;
 export interface Document {
   data?: Multiple<Resource>;
   links?: any;
-  included?: Multiple<Resource>;
+  included?: Resource[] | undefined;
 }
 
 export interface ResourceId {
@@ -20,21 +20,15 @@ export interface ResourceId {
 
 export interface Resource extends ResourceId {
   attributes: any;
-  relationships?: Hash<Relations>;
+  relationships?: Hash<RelationshipObj>;
 }
 
-export interface Relations {
+export interface RelationshipObj {
   data?: Multiple<ResourceId>;
   links?: any;
   meta?: any;
 }
 
-// Internal Processing Types
+// Internal Types
 
-export interface PResource {
-  resource: any;
-  relations: PRelations;
-}
-
-export type PRelations = Hash<Multiple<ResourceId>>;
-export type RelHash = Hash<Hash<Resource>>;
+export type RelationsHash = Hash<Hash<Resource>>;
