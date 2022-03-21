@@ -29,7 +29,7 @@ function denormalize(resources: Multiple<Resource>, relations: RelationsHash): a
 }
 
 function processResource(res: Resource, relHash: RelationsHash): Serialization {
-  let { id, attributes, relationships } = res;
+  let { id, type, attributes, relationships } = res;
 
   let rels: Multiple<any> = mapValues(relationships, (rel: RelationshipObj): any =>
     fmapMultiple(rel.data, (relId: ResourceId): any => {
@@ -38,7 +38,7 @@ function processResource(res: Resource, relHash: RelationsHash): Serialization {
     })
   );
 
-  return assign({}, attributes, { id }, rels);
+  return assign({}, attributes, { type, id }, rels);
 }
 
 function findRelation(rel: ResourceId, relations: RelationsHash): Resource | undefined {

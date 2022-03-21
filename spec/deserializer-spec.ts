@@ -82,17 +82,19 @@ describe('deserialize', () => {
 
     let expected = [
       {
+        'type': 'articles',
         'id': '1',
         'title': 'JSON API paints my bikeshed!',
         'author': {
+          'type': 'people',
           'id': '9',
           'first-name': 'Dan',
           'last-name': 'Gebhardt',
           'twitter': 'dgeb'
         },
         'comments': [
-          { 'id': '5', 'body': 'First!' },
-          { 'id': '12', 'body': 'I like XML better' }
+          { 'type': 'comments', 'id': '5', 'body': 'First!' },
+          { 'type': 'comments', 'id': '12', 'body': 'I like XML better' }
         ]
       }
     ];
@@ -124,8 +126,8 @@ describe('deserialize', () => {
     let result: any = deserialize(document);
 
     let expected = [
-      { id: '1', name: 'John', friend: { id: '2', name: 'Carl', dog: { id: '3', name: 'Bobby' } } },
-      { id: '2', name: 'Carl', dog: { id: '3', name: 'Bobby' } }
+      { type: 'people', id: '1', name: 'John', friend: { type: 'people', id: '2', name: 'Carl', dog: { type: 'dogs', id: '3', name: 'Bobby' } } },
+      { type: 'people', id: '2', name: 'Carl', dog: { type: 'dogs', id: '3', name: 'Bobby' } }
     ];
 
     expect(matches(expected)(result)).toBe(true);
